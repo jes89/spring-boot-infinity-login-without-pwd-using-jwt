@@ -54,28 +54,22 @@ public class JwtProvider {
     	try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
-        } catch (SignatureException e) {
-            logger.error("Invalid JWT signature -> Message: {} ", e);
-        } catch (MalformedJwtException e) {
-            logger.error("Invalid JWT token -> Message: {}", e);
-        } catch (ExpiredJwtException e) {
-            logger.error("Expired JWT token -> Message: {}", e);
-        } catch (UnsupportedJwtException e) {
-            logger.error("Unsupported JWT token -> Message: {}", e);
-        } catch (IllegalArgumentException e) {
-            logger.error("JWT claims string is empty -> Message: {}", e);
+        } catch (Exception e) {
+        	return false;
         }
-        
-        return false;
     }
     
-	public String getJwt(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
+	public String getJwt(HttpServletRequest req) {
+        String authHeader = req.getHeader("Authorization");
         
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
         	return authHeader.replace("Bearer ","");
         }
  
         return null;
+    }
+	
+	public String getMacJwt(HttpServletRequest req) {
+        return req.getHeader("mac");
     }
 }

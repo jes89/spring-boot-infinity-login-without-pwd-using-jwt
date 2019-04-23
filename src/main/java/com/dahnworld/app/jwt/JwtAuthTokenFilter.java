@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -47,63 +48,80 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 			return;
 		}
 		
-		
 		try {
-			ObjectMapper mapper = new ObjectMapper();
 			
-			UserDto userDto = mapper.readValue(req.getInputStream(),UserDto.class);
+			String accessToken = jwtProvider.getJwt(req);
+			String mac = jwtProvider.getMacJwt(req);
 			
-			String accessToken = userDto.getAccessToken();
-			String mac = userDto.getMac();
-			
-			String jwt = jwtProvider.getJwt(req);
-			
-			String userId = this.getUserIdByJwt(jwt, accessToken, mac);
-			
-			String newAccessToken = null;
+			String userId = this.getUserIdByJwt(accessToken, mac);
 			
 			if (userId == null || userId.length() == 0) {
-				logger.error("refreshAccessToken  -> userId is inVaild");
+				this.setResponseEntity(null, "invaild token and mac information", "failed", req, res, filterChain);
+				return;
 			}
 			
-			UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
+			UsernamePasswordAuthenticationToken authentication = this.saveUserAuthentication(userId, req);
 			
-			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
-					null, userDetails.getAuthorities());
+			JwtResponse jwtResponse = new JwtResponse(jwtProvider.generateJwtToken(authentication), this.getExpiryTime() , null, null);
 			
-			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-			
-			jwt = jwtProvider.generateJwtToken(authentication);
-			
-			JwtResponse jwtResponse = new JwtResponse(jwt, this.getExpiryTime() , null, null);
-
-			newAccessToken = jwtResponse.getToken();
-			
-			userDto.setUserId(userDetails.getUsername());
-			userDto.setAccessToken(newAccessToken);
-			userDto.setMac(mac);
-			
-			int updatedFlag = userService.updateUserAccessInfo(userDto, newAccessToken);
-			
-			if (updatedFlag == 0) {
-				logger.error("refreshToken  -> updateError: ");
+			if (this.updateUserToken(userId, jwtResponse.getToken() , mac) == 0) {
+				this.setResponseEntity(null, "update token error", "failed", req, res, filterChain);
+				return;
 			}
-			
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-			
-			req.setAttribute("jwtResponse", jwtResponse);
+				
+			this.setResponseEntity(jwtResponse, req, res, filterChain);
+			return;
 			
 		} catch (Exception e) {
 			logger.error("jwt doFilterInternal error: " + e.getMessage());
 		}
+	}
+	
+	private UsernamePasswordAuthenticationToken saveUserAuthentication(String userId, HttpServletRequest req) {
+		
+		UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
+		
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
+				null, userDetails.getAuthorities()
+		);
+		
+		authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
+		
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		
+		return authentication;
+	}
+	
+	private void setResponseEntity(JwtResponse jwtResponse, HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws IOException, ServletException{
+		
+		req.setAttribute("jwtResponse", jwtResponse);
+		
 		filterChain.doFilter(req, res);
 	}
+	
+	private void setResponseEntity(String jwt, String msg, String callbackNm, HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws IOException, ServletException{
+		
+		JwtResponse jwtResponse = new JwtResponse(jwt, this.getExpiryTime() , msg, callbackNm);
+		
+		req.setAttribute("jwtResponse", jwtResponse);
+		
+		filterChain.doFilter(req, res);
+	}
+	
+	private int updateUserToken(String userId, String token, String mac) {
+		UserDto userDto = new UserDto();
+		
+		userDto.setUserId(userId);
+		userDto.setMac(mac);
+		
+		return userService.updateUserAccessInfo(userDto, token);
+	}
 
-	private String getUserIdByJwt(String jwt, String accessToken, String mac) {
+	private String getUserIdByJwt(String accessToken, String mac) {
 		String userId = null;
 
-		if (jwt != null && jwtProvider.validateJwtToken(jwt)) {
-			userId = jwtProvider.getUserNameFromJwtToken(jwt);
+		if (accessToken != null && jwtProvider.validateJwtToken(accessToken)) {
+			userId = jwtProvider.getUserNameFromJwtToken(accessToken);
 		} else {
 			UserDto selectedUserDto = this.getUserByAccessToken(accessToken, mac);
 			userId = selectedUserDto.getUserId();
