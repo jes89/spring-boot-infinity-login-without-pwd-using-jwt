@@ -92,22 +92,6 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 		return authentication;
 	}
 	
-	private void setResponseEntity(JwtResponse jwtResponse, HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws IOException, ServletException{
-		
-		req.setAttribute("jwtResponse", jwtResponse);
-		
-		filterChain.doFilter(req, res);
-	}
-	
-	private void setResponseEntity(String jwt, String msg, String callbackNm, HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws IOException, ServletException{
-		
-		JwtResponse jwtResponse = new JwtResponse(jwt, this.getExpiryTime() , msg, callbackNm);
-		
-		req.setAttribute("jwtResponse", jwtResponse);
-		
-		filterChain.doFilter(req, res);
-	}
-	
 	private int updateUserToken(String userId, String token, String mac) {
 		UserDto userDto = new UserDto();
 		
@@ -137,7 +121,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 		boolean isVaild = this.checkVaildUser(userMac, selectedUser);
 
 		if (isVaild == false) {
-			return null;
+			return new UserDto();
 		}
 
 		return selectedUser;
@@ -156,6 +140,17 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 		String selectedUserMac = selectedUser.getMac();
 
 		return userMac.equals(selectedUserMac);
+	}
+	
+	private void setResponseEntity(JwtResponse jwtResponse, HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws IOException, ServletException{
+		req.setAttribute("jwtResponse", jwtResponse);
+		filterChain.doFilter(req, res);
+	}
+	
+	private void setResponseEntity(String jwt, String msg, String callbackNm, HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws IOException, ServletException{
+		JwtResponse jwtResponse = new JwtResponse(jwt, this.getExpiryTime() , msg, callbackNm);
+		req.setAttribute("jwtResponse", jwtResponse);
+		filterChain.doFilter(req, res);
 	}
 
 	private long getExpiryTime() {
