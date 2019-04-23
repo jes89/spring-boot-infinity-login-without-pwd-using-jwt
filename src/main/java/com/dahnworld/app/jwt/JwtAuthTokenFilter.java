@@ -56,7 +56,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 			String userId = this.getUserIdByJwt(accessToken, mac);
 			
 			if (userId == null || userId.length() == 0) {
-				this.setResponseEntity(null, "invaild token and mac information", "failed", req, res, filterChain);
+				this.setResponseEntity(null, "invaild token and mac information", null, req, res, filterChain);
 				return;
 			}
 			
@@ -65,7 +65,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 			JwtResponse jwtResponse = new JwtResponse(jwtProvider.generateJwtToken(authentication), this.getExpiryTime() , null, null);
 			
 			if (this.updateUserToken(userId, jwtResponse.getToken() , mac) == 0) {
-				this.setResponseEntity(null, "update token error", "failed", req, res, filterChain);
+				this.setResponseEntity(null, "update token error", null, req, res, filterChain);
 				return;
 			}
 				
@@ -73,7 +73,8 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 			return;
 			
 		} catch (Exception e) {
-			this.setResponseEntity(null, "get new token error", "failed", req, res, filterChain);
+			logger.error("jwt doFilterInternal error: " + e.getMessage());
+			this.setResponseEntity(null, "get new token error", null, req, res, filterChain);
 		}
 	}
 	

@@ -13,10 +13,7 @@ public class testController {
 	
 	@RequestMapping("/test")
 	protected ResponseEntity<?> test(@RequestAttribute JwtResponse jwtResponse) {
-		
-		jwtResponse.setMsg("SUCCESS");
-		jwtResponse.setCallbackType("그런거없다");
-		
+		System.out.println("jwtResponse : " + jwtResponse.getMsg());
 		return ResponseEntity.ok(jwtResponse);
 	}
 }
