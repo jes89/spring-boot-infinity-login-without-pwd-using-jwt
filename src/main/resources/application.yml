@@ -10,4 +10,4 @@ mybatis:
 grokonez:
   app:
     jwtSecret: jwtGrokonezSecretKey
-    jwtExpiration: 60000
+    jwtExpiration: 600000
