@@ -73,7 +73,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 			return;
 			
 		} catch (Exception e) {
-			logger.error("jwt doFilterInternal error: " + e.getMessage());
+			this.setResponseEntity(null, "get new token error", "failed", req, res, filterChain);
 		}
 	}
 	
