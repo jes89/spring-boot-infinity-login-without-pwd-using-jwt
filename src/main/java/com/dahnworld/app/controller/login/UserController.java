@@ -68,54 +68,6 @@ public class UserController {
         return ResponseEntity.ok(jwtResponse);
 	}
 	
-//	@PutMapping("/refreshAccessToken")
-//	public ResponseEntity<?> refreshToken(@RequestBody UserDto userDto, HttpServletRequest req) {
-//		
-//		ResponseEntity<?> responseEntity = null;
-//		JwtResponse jwtResponse = null;
-//		
-//        try {
-//        	
-//        	String jwt = jwtProvider.getJwt(req);
-//        	
-//        	String userId = this.getUserIdByJwt(jwt, userDto.getAccessToken(), userDto.getMac());
-//        
-//        	if(userId == null || userId.length() == 0) {
-//        		responseEntity = new ResponseEntity<String>("invalid token ", HttpStatus.PRECONDITION_FAILED);
-//        		logger.error("unvaild token");
-//        	}
-//        	
-//        	UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
-//            
-//            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-//            
-//            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-//            
-//            jwt = jwtProvider.generateJwtToken(authentication);
-//            
-//            jwtResponse = new JwtResponse(jwt, this.getExpiryTime() ,"success", "updateToken");
-//            
-//            userDto.setUserId(userDetails.getUsername());
-//            userDto.setAccessToken(jwtResponse.getToken());
-//            
-//            responseEntity = ResponseEntity.ok(jwtResponse);
-//            
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
-//            
-//        } catch (Exception e) {
-//            responseEntity = new ResponseEntity<String>("refresh token failed", HttpStatus.PRECONDITION_FAILED);
-//            logger.error("refreshToken  -> Message: " + e.getMessage());
-//        }
-//        
-//        int updateed = userService.updateUserAccessInfo(userDto, jwtResponse.getToken());
-//		
-//		if( updateed == 0) {
-//            return new ResponseEntity<String>("updating information of access is failed", HttpStatus.NOT_MODIFIED);
-//		}
-//        
-//		return responseEntity;
-//	}
-
 	private String getJwtByUserInfo(UserDto userDto) {
 
 		String userId = userDto.getUserId();

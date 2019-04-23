@@ -53,13 +53,12 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 			
 			UserDto userDto = mapper.readValue(req.getInputStream(),UserDto.class);
 			
-			String accessToke = userDto.getAccessToken();
+			String accessToken = userDto.getAccessToken();
 			String mac = userDto.getMac();
 			
 			String jwt = jwtProvider.getJwt(req);
 			
-			System.out.println(jwt);
-			String userId = this.getUserIdByJwt(jwt, accessToke, mac);
+			String userId = this.getUserIdByJwt(jwt, accessToken, mac);
 			
 			String newAccessToken = null;
 			
@@ -76,7 +75,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 			
 			jwt = jwtProvider.generateJwtToken(authentication);
 			
-			JwtResponse jwtResponse = new JwtResponse(jwt, this.getExpiryTime() ,"success", "updateToken");
+			JwtResponse jwtResponse = new JwtResponse(jwt, this.getExpiryTime() , null, null);
 
 			newAccessToken = jwtResponse.getToken();
 			
@@ -84,15 +83,16 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 			userDto.setAccessToken(newAccessToken);
 			userDto.setMac(mac);
 			
-			int updateed = userService.updateUserAccessInfo(userDto, newAccessToken);
+			int updatedFlag = userService.updateUserAccessInfo(userDto, newAccessToken);
 			
-			if (updateed == 0) {
+			if (updatedFlag == 0) {
 				logger.error("refreshToken  -> updateError: ");
 			}
 			
-			req.setAttribute("newAccessToken", newAccessToken);
-			
 			SecurityContextHolder.getContext().setAuthentication(authentication);
+			
+			req.setAttribute("jwtResponse", jwtResponse);
+			
 		} catch (Exception e) {
 			logger.error("jwt doFilterInternal error: " + e.getMessage());
 		}
