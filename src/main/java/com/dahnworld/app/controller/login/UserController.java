@@ -47,12 +47,12 @@ public class UserController {
 		
 		String jwt = this.getJwtByUserInfo(userDto);
 		
-		JwtResponse jwtResponse = new JwtResponse(jwt ,"success");
+		JwtResponse jwtResponse = new JwtResponse(jwt ,"new token issued");
 		
 		int updateed = userService.updateUserAccessInfo( userDto, jwtResponse.getToken() );
 		
 		if( updateed == 0) {
-            return new ResponseEntity<String>("updating information of access is failed", HttpStatus.NOT_MODIFIED);
+			jwtResponse.setMsg("update failed");
 		}
 		
 		return ResponseEntity.ok(jwtResponse);

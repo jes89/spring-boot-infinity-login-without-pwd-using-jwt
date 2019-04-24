@@ -32,9 +32,6 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 	@Autowired
 	UserDetailsService userDetailsService;
 	
-	@Value("${grokonez.app.jwtExpiration}")
-	private long jwtExpiration;
-	
 	@Override
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain)
 			throws ServletException, IOException {
@@ -48,17 +45,15 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 		}
 		
 		try {
-			
+
 			String accessToken = jwtProvider.getJwt(req);
 			String mac = jwtProvider.getMacJwt(req);
-
+			
 			if (accessToken == null || jwtProvider.validateJwtToken(accessToken) == false) {
 				jwtResponse = this.issueNewToken(accessToken, mac, req);
 			} else {
 				jwtResponse = this.extendTokenLifeSpan(accessToken, req);
 			}
-			
-			jwtResponse.setExpiryTime(this.getExpiryTime());
 			
 		} catch (Exception e) {
 			jwtResponse = new JwtResponse(null, "doFilterInternal exception");
@@ -138,8 +133,5 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 		return userMac.equals(selectedUserMac);
 	}
 	
-	private long getExpiryTime() {
-		Date date = new Date();
-		return (date.getTime() + this.jwtExpiration);
-	}
+
 }

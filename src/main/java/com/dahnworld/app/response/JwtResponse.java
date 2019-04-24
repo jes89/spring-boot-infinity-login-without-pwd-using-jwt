@@ -1,14 +1,19 @@
 package com.dahnworld.app.response;
 
+import java.util.Date;
 import java.util.HashMap;
 
-public class JwtResponse {
+import org.springframework.beans.factory.annotation.Value;
 
+public class JwtResponse {
+	@Value("${grokonez.app.jwtExpiration}")
+	private long jwtExpiration;
+	
 	private String token;
 	private String type = "Bearer";
 	private String msg;
 	private String callbackType;
-	private long expiryTime;
+	private long expiryTime= (new Date().getTime() + this.jwtExpiration);
 	private HashMap<String, ?> payload;
 	
 	public JwtResponse(String accessToken, String msg) {
@@ -57,11 +62,14 @@ public class JwtResponse {
 	}
 
 	public long getExpiryTime() {
-		return expiryTime;
+		return this.expiryTime;
 	}
 
 	public void setExpiryTime(long expiryTime) {
 		this.expiryTime = expiryTime;
+	}
+	public void setExpiryTime() {
+		this.expiryTime = (new Date().getTime() + this.jwtExpiration);
 	}
 	
 }

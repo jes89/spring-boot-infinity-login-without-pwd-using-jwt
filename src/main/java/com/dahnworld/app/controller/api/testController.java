@@ -4,8 +4,9 @@ import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dahnworld.app.dto.UserDto;
@@ -13,6 +14,7 @@ import com.dahnworld.app.jwt.JwtProvider;
 import com.dahnworld.app.response.JwtResponse;
 import com.dahnworld.app.service.UserService;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 public class testController {
 	
@@ -22,7 +24,7 @@ public class testController {
 	@Autowired
 	private JwtProvider jwtProvider;
 	
-	@RequestMapping("/test")
+	@PutMapping("/test")
 	protected ResponseEntity<?> test(@RequestAttribute JwtResponse jwtResponse) {
 		
 		String accessToken = jwtResponse.getToken();
