@@ -1,20 +1,18 @@
 package com.dahnworld.app.response;
 
+import java.util.HashMap;
+
 public class JwtResponse {
 
 	private String token;
 	private String type = "Bearer";
 	private String msg;
 	private String callbackType;
+	private HashMap<String, ?> payload;
 	
-	
-	private long expiryTime;
-
-	public JwtResponse(String accessToken, long expiryTime, String msg, String callbackType) {
+	public JwtResponse(String accessToken, String msg) {
 		this.token = accessToken;
-		this.expiryTime = expiryTime;
 		this.msg = msg;
-		this.callbackType = callbackType;
 	}
 
 	public String getToken() {
@@ -33,14 +31,6 @@ public class JwtResponse {
 		this.type = type;
 	}
 	
-	public long getExpiryTime() {
-		return expiryTime;
-	}
-
-	public void setExpiryTime(long expiryTime) {
-		this.expiryTime = expiryTime;
-	}
-
 	public String getMsg() {
 		return msg;
 	}
@@ -57,4 +47,11 @@ public class JwtResponse {
 		this.callbackType = callbackType;
 	}
 
+	public HashMap<String, ?> getPayload() {
+		return payload;
+	}
+
+	public void setPayload(HashMap<String, ?> payload) {
+		this.payload = payload;
+	}
 }

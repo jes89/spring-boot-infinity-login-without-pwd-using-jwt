@@ -9,5 +9,4 @@ public class DahnworldAppApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DahnworldAppApplication.class, args);
 	}
-
 }
