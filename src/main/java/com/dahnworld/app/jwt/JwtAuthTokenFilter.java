@@ -1,6 +1,7 @@
 package com.dahnworld.app.jwt;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -8,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,12 +32,16 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 	@Autowired
 	UserDetailsService userDetailsService;
 	
+	@Value("${grokonez.app.jwtExpiration}")
+	private long jwtExpiration;
+	
 	@Override
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain)
 			throws ServletException, IOException {
 		
 		String reqUri = req.getRequestURI();
 		JwtResponse jwtResponse = null;
+		
 		if(reqUri.equals("/api/auth/loginByUserInfo")) {
 			filterChain.doFilter(req, res);
 			return;
@@ -51,6 +57,8 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 			} else {
 				jwtResponse = this.extendTokenLifeSpan(accessToken, req);
 			}
+			
+			jwtResponse.setExpiryTime(this.getExpiryTime());
 			
 		} catch (Exception e) {
 			jwtResponse = new JwtResponse(null, "doFilterInternal exception");
@@ -128,5 +136,10 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 		String selectedUserMac = selectedUser.getMac();
 
 		return userMac.equals(selectedUserMac);
+	}
+	
+	private long getExpiryTime() {
+		Date date = new Date();
+		return (date.getTime() + this.jwtExpiration);
 	}
 }
