@@ -52,7 +52,7 @@ public class UserController {
 		int updateed = userService.updateUserAccessInfo( userDto, jwtResponse.getToken() );
 		
 		if( updateed == 0) {
-			jwtResponse.setMsg("update failed");
+			jwtResponse.setMsg("update token error");
 		}
 		
 		return ResponseEntity.ok(jwtResponse);
