@@ -1,4 +1,4 @@
-package com.dahnworld.app.controller.api;
+package com.dahnworld.app.controller;
 
 import java.util.HashMap;
 
