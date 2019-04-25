@@ -75,7 +75,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 		
 		UsernamePasswordAuthenticationToken authentication = this.saveUserAuthentication(userId, req);
 		
-		JwtResponse jwtResponse = new JwtResponse(jwtProvider.generateJwtToken(authentication), "new token issued");
+		JwtResponse jwtResponse = new JwtResponse(jwtProvider.generateJwtToken(authentication), "new token issued", selectedUserDto.getName());
 		
 		if (this.updateUserToken(userId, jwtResponse.getToken() , mac) == 0) {
 			jwtResponse.setMsg("update token error");
@@ -86,8 +86,9 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 	
 	private JwtResponse extendTokenLifeSpan(String accessToken, HttpServletRequest req) {
 		String userId = jwtProvider.getUserNameFromJwtToken(accessToken);
+		UserDto selectedUserDto = userService.getUserByUserId(userId); 
 		this.saveUserAuthentication(userId, req);
-		return new JwtResponse(accessToken, "extended token life span");
+		return new JwtResponse(accessToken, "extended token life span", selectedUserDto.getName());
 	}
 	
 	private UsernamePasswordAuthenticationToken saveUserAuthentication(String userId, HttpServletRequest req) {

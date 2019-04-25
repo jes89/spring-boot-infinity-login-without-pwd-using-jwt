@@ -13,12 +13,19 @@ public class JwtResponse {
 	private String type = "Bearer";
 	private String msg;
 	private String callbackType;
+	private String userNm;
 	private long expiryTime= (new Date().getTime() + this.jwtExpiration);
 	private HashMap<String, ?> payload;
 	
 	public JwtResponse(String accessToken, String msg) {
 		this.token = accessToken;
 		this.msg = msg;
+	}
+	
+	public JwtResponse(String accessToken, String msg, String userNm) {
+		this.token = accessToken;
+		this.msg = msg;
+		this.userNm = userNm;
 	}
 
 	public String getToken() {
@@ -71,5 +78,22 @@ public class JwtResponse {
 	public void setExpiryTime() {
 		this.expiryTime = (new Date().getTime() + this.jwtExpiration);
 	}
+
+	public long getJwtExpiration() {
+		return jwtExpiration;
+	}
+
+	public void setJwtExpiration(long jwtExpiration) {
+		this.jwtExpiration = jwtExpiration;
+	}
+
+	public String getUserNm() {
+		return userNm;
+	}
+
+	public void setUserNm(String userNm) {
+		this.userNm = userNm;
+	}
+	
 	
 }
