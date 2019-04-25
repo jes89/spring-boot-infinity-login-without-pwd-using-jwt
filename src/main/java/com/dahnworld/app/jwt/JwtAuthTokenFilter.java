@@ -54,7 +54,6 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 			} else {
 				jwtResponse = this.extendTokenLifeSpan(accessToken, req);
 			}
-			
 		} catch (Exception e) {
 			jwtResponse = new JwtResponse(null, "doFilterInternal exception");
 		}

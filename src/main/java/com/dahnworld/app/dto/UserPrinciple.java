@@ -42,7 +42,7 @@ public class UserPrinciple extends User {
 	    List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 	    
 		
-	    authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+	    authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         
         return new UserPrinciple(
                 user.getUserId(),
