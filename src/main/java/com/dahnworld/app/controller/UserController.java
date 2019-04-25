@@ -48,6 +48,7 @@ public class UserController {
 		String jwt = this.getJwtByUserInfo(userDto);
 		
 		JwtResponse jwtResponse = new JwtResponse(jwt ,"new token issued");
+		UserDto selectedUser = userService.getUserByUserId(userDto.getUserId());
 		
 		int updateed = userService.updateUserAccessInfo( userDto, jwtResponse.getToken() );
 		
@@ -60,7 +61,7 @@ public class UserController {
 		payload.put("result","success");
 		
 		jwtResponse.setPayload(payload);
-		
+		jwtResponse.setUserNm(selectedUser.getName());
 		return ResponseEntity.ok(jwtResponse);
 	}
 	
