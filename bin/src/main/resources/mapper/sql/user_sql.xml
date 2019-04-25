@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dahnworld.app.mapper.UserMapper">
+	
+	<insert id="insertUser">
+		<![CDATA[
+			
+		]]>
+	</insert>
+	
+	<update id="updateUserAccessInfo">
+		<![CDATA[
+			update [dbo].[2018tbUser] 
+			set mac 		= #{mac}
+			,	accessToken = #{accessToken}
+			where userId = #{userId}
+		]]>
+	</update>
+	
+	<update id="updateUserInfo">
+		<![CDATA[
+			select * from [dbo].[2018tbUser] where userId = #{userId}
+		]]>
+	</update>
+	
+	<select id="getUserByUserId" resultType="userDto">
+		<![CDATA[
+			select * from [dbo].[2018tbUser] where userId = #{userId}
+		]]>
+	</select>
+	
+		<select id="getUserByUserList" resultType="userDto">
+		<![CDATA[
+			select top 10 * from [dbo].[2018tbUser] 
+		]]>
+	</select>
+	
+	<select id="getUserByAccessToken" resultType="userDto">
+		<![CDATA[
+			select * from [dbo].[2018tbUser] where accessToken = #{accessToken}
+		]]>
+	</select>
+    
+</mapper>

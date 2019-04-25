@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:sqlserver://13.124.152.67;useLOBs=false;DatabaseName=Dahn2014
+    username: DwUser
+    password: 1111
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+mybatis:
+  config-location: classpath:mapper/mybatis_config.xml
+  
+grokonez:
+  app:
+    jwtSecret: jwtGrokonezSecretKey
+    jwtExpiration: 600000
