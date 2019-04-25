@@ -44,6 +44,11 @@ public class UserDaoImpl implements UserDao {
 		return userMapper.getUserByAccessToken(accessToken);
 	}
 
+	@Override
+	public List<UserDto> getUserByUserList() {
+		return userMapper.getUserByUserList();
+	}
+
 	
 
 }

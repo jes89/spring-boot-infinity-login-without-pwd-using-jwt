@@ -17,6 +17,9 @@ public interface UserMapper {
 	UserDto getUserByUserId(String userId);
 	UserDto getUserByAccessToken(String accessToken);
 	
+	List<UserDto> getUserByUserList();
 	List<String> getUserRoles(String userId);
+	
+	
 	
 }

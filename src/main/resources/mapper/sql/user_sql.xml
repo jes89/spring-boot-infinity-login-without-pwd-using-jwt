@@ -29,6 +29,12 @@
 		]]>
 	</select>
 	
+		<select id="getUserByUserList" resultType="userDto">
+		<![CDATA[
+			select top 10 * from [dbo].[2018tbUser] 
+		]]>
+	</select>
+	
 	<select id="getUserByAccessToken" resultType="userDto">
 		<![CDATA[
 			select * from [dbo].[2018tbUser] where accessToken = #{accessToken}

@@ -13,7 +13,10 @@ public interface UserDao  {
 	int updateUserInfo(UserDto userDto);
 	
     UserDto getUserByUserId(String userId);
-    List<String> getUserRoles(String userId);
     UserDto getUserByAccessToken(String accessToken);
+    
+    List<UserDto> getUserByUserList();
+    List<String> getUserRoles(String userId);
+    
     
 }

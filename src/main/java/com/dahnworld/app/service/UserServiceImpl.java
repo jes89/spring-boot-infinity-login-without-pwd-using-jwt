@@ -45,4 +45,9 @@ public class UserServiceImpl implements UserService {
 		return userDao.getUserByAccessToken(accessToken);
 	}
 
+	@Override
+	public List<UserDto> getUserByUserList() {
+		return userDao.getUserByUserList();
+	}
+
 }

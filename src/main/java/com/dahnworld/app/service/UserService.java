@@ -13,6 +13,8 @@ public interface UserService {
 	int updateUserInfo(UserDto userDto);
 	
 	UserDto getUserByUserId(String userId);
-    List<String> getUserRoles(String userId);
     UserDto getUserByAccessToken(String accessToken);
+    
+    List<String> getUserRoles(String userId);
+    List<UserDto> getUserByUserList();
 }
