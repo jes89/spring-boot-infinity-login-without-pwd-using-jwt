@@ -97,6 +97,11 @@ public class UserController {
 		return ResponseEntity.ok(jwtResponse);
 	}
 	
+	@GetMapping("/getAttendanceList")
+	protected ResponseEntity<?> getAttendanceList(@RequestAttribute JwtResponse jwtResponse){
+		return ResponseEntity.ok(jwtResponse);
+	}
+	
 	private String getJwtByUserInfo(UserDto userDto) {
 
 		String userId = userDto.getUserId();
