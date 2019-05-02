@@ -9,10 +9,12 @@ import com.dahnworld.app.dto.UserDto;
 @Mapper
 public interface UserMapper {
 	
-	int insertUser(UserDto userDto);
+	int insertTokenLog(UserDto userDto);
 	
 	int updateUserAccessInfo(UserDto userDto);
-	int updateUserInfo(UserDto userDto);
+	int updateTokenLog(UserDto userDto);
+	
+	String getUserFromTokenLog(UserDto userDto);
 	
 	UserDto getUserByUserId(String userId);
 	UserDto getUserByAccessToken(String accessToken);

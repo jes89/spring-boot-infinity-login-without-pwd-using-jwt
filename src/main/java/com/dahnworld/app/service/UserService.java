@@ -7,14 +7,14 @@ import com.dahnworld.app.dto.UserDto;
 
 public interface UserService {
 	
-	int insertUser(UserDto userDto);
-	
 	int updateUserAccessInfo(UserDto userDto, String accessToken);
-	int updateUserInfo(UserDto userDto);
+	int updateTokenLog(UserDto userDto);
+	
+	String getUserFromTokenLog(String accessToken, String mac, long expiryTime);
 	
 	UserDto getUserByUserId(String userId);
-    UserDto getUserByAccessToken(String accessToken);
-    
-    List<String> getUserRoles(String userId);
-    List<UserDto> getUserByUserList();
+	UserDto getUserByAccessToken(String accessToken);
+	
+	List<UserDto> getUserByUserList();
+	List<String> getUserRoles(String userId);
 }

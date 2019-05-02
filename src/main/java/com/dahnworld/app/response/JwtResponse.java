@@ -12,7 +12,6 @@ public class JwtResponse {
 	private String token;
 	private String type = "Bearer";
 	private String msg;
-	private String callbackType;
 	private String userNm;
 	private long expiryTime= (new Date().getTime() + this.jwtExpiration);
 	private HashMap<String, ?> payload;
@@ -51,15 +50,7 @@ public class JwtResponse {
 	public void setMsg(String msg) {
 		this.msg = msg;
 	}
-
-	public String getCallbackType() {
-		return callbackType;
-	}
-
-	public void setCallbackType(String callbackType) {
-		this.callbackType = callbackType;
-	}
-
+	
 	public HashMap<String, ?> getPayload() {
 		return payload;
 	}
@@ -81,10 +72,6 @@ public class JwtResponse {
 
 	public long getJwtExpiration() {
 		return jwtExpiration;
-	}
-
-	public void setJwtExpiration(long jwtExpiration) {
-		this.jwtExpiration = jwtExpiration;
 	}
 
 	public String getUserNm() {

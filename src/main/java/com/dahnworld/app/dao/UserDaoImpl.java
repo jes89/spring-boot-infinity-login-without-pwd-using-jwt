@@ -15,18 +15,18 @@ public class UserDaoImpl implements UserDao {
 	UserMapper userMapper;
 	
 	@Override
-	public int insertUser(UserDto userDto) {
-		return userMapper.insertUser(userDto);
+	public int insertTokenLog(UserDto userDto) {
+		return userMapper.insertTokenLog(userDto);
 	}
 	
 	@Override
 	public int updateUserAccessInfo(UserDto userDto) {
 		return userMapper.updateUserAccessInfo(userDto);
 	}
-
+	
 	@Override
-	public int updateUserInfo(UserDto userDto) {
-		return userMapper.updateUserInfo(userDto);
+	public int updateTokenLog(UserDto userDto) {
+		return userMapper.updateTokenLog(userDto);
 	}
 	
 	@Override
@@ -48,6 +48,14 @@ public class UserDaoImpl implements UserDao {
 	public List<UserDto> getUserByUserList() {
 		return userMapper.getUserByUserList();
 	}
+
+	@Override
+	public String getUserFromTokenLog(UserDto userDto) {
+		return userMapper.getUserFromTokenLog(userDto);
+	}
+	
+
+
 
 	
 

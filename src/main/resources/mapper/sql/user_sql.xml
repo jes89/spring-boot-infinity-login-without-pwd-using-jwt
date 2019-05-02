@@ -2,9 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dahnworld.app.mapper.UserMapper">
 	
-	<insert id="insertUser">
+	<insert id="insertTokenLog">
 		<![CDATA[
-			
+			INSERT INTO dbo.tbTokenLog(userId, accessToken, mac, expiryTime, usedYn, regDtm)
+			VALUES(#{userId},#{accessToken},#{mac}, #{expiryTime}, 'N', GETDATE())
 		]]>
 	</insert>
 	
@@ -17,9 +18,13 @@
 		]]>
 	</update>
 	
-	<update id="updateUserInfo">
+	<update id="updateTokenLog">
 		<![CDATA[
-			select * from [dbo].[2018tbUser] where userId = #{userId}
+			update [dbo].[tbTokenLog] 
+			set usedYn = 'Y'
+			where accessToken = #{accessToken} 
+			and mac = #{mac} 
+			and expiryTime = #{expiryTime}
 		]]>
 	</update>
 	
@@ -38,6 +43,24 @@
 	<select id="getUserByAccessToken" resultType="userDto">
 		<![CDATA[
 			select * from [dbo].[2018tbUser] where accessToken = #{accessToken}
+		]]>
+	</select>
+    
+   	<select id="getUserFromTokenLog" resultType="String">
+		<![CDATA[
+			select TOP 1 userId 
+			from [dbo].[tbTokenLog] 
+			where accessToken = #{accessToken} 
+			and mac = #{mac} 
+			and expiryTime = #{expiryTime}
+			and usedYn = 'N'
+			order by idx desc
+		]]>
+	</select>
+	
+   	<select id="getUserRoles" resultType="String">
+		<![CDATA[
+			select 'ROLE_USER'
 		]]>
 	</select>
     

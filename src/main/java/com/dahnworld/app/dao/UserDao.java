@@ -7,16 +7,18 @@ import com.dahnworld.app.dto.UserDto;
  
 public interface UserDao  {
 	
-	int insertUser(UserDto userDto);
+	int insertTokenLog(UserDto userDto);
 	
 	int updateUserAccessInfo(UserDto userDto);
-	int updateUserInfo(UserDto userDto);
+	int updateTokenLog(UserDto userDto);
 	
-    UserDto getUserByUserId(String userId);
-    UserDto getUserByAccessToken(String accessToken);
-    
-    List<UserDto> getUserByUserList();
-    List<String> getUserRoles(String userId);
+	String getUserFromTokenLog(UserDto userDto);
+	
+	UserDto getUserByUserId(String userId);
+	UserDto getUserByAccessToken(String accessToken);
+	
+	List<UserDto> getUserByUserList();
+	List<String> getUserRoles(String userId);
     
     
 }

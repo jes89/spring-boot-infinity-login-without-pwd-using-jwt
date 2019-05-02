@@ -10,7 +10,7 @@ public class UserDto{
     private String email;
     private String accessToken;
     private String mac;
-    private String expiryTime;
+    private long expiryTime;
     
     
     private List<String> roles;
@@ -63,11 +63,11 @@ public class UserDto{
 		this.mac = mac;
 	}
 
-	public String getExpiryTime() {
+	public long getExpiryTime() {
 		return expiryTime;
 	}
 
-	public void setExpiryTime(String expiryTime) {
+	public void setExpiryTime(long expiryTime) {
 		this.expiryTime = expiryTime;
 	}
 

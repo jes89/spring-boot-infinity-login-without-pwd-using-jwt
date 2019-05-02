@@ -24,12 +24,12 @@ public class JwtProvider {
     private String jwtSecret;
  
     @Value("${grokonez.app.jwtExpiration}")
-    private int jwtExpiration;
+    private long jwtExpiration;
  
     public String generateJwtToken(Authentication authentication) {
  
         UserPrinciple userPrincipal = (UserPrinciple) authentication.getPrincipal();
-       
+        
         return Jwts.builder()
 		                .setSubject((userPrincipal.getUsername()))
 		                .setIssuedAt(new Date())
@@ -65,7 +65,11 @@ public class JwtProvider {
         return null;
     }
 	
-	public String getMacJwt(HttpServletRequest req) {
+	public String getMac(HttpServletRequest req) {
         return req.getHeader("mac");
+    }
+	
+	public long getExpiryTime(HttpServletRequest req) {
+        return Long.parseLong(req.getHeader("expiryTime"));
     }
 }
