@@ -77,8 +77,8 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 	}
 	
 	private JwtResponse issueNewToken(String accessToken, String mac, HttpServletRequest req) {
-		logger.info("issueNewToken : ");
 		
+		logger.info("issueNewToken : ");
 		
 		UserDto selectedUserDto = this.getUserByAccessToken(accessToken, mac);
 		String userId = selectedUserDto.getUserId();
@@ -109,7 +109,6 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 		UserDto selectedUserDto = userService.getUserByUserId(userId); 
 		
 		logger.info("extendTokenLifeSpan : ");
-		
 		logger.info("selectedUserDto : " + selectedUserDto.toString());
 		
 		this.saveUserAuthentication(userId, req);

@@ -1,6 +1,5 @@
 package com.dahnworld.app.controller;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -64,7 +63,7 @@ public class UserController {
 		selectedUserDto.setMac(userDto.getMac());
 		
 		
-		int updated = userService.updateUserAccessInfo( selectedUserDto, jwtResponse.getToken() );
+		int updated = userService.updateUserAccessInfo(selectedUserDto, jwtResponse.getToken());
 		
 		logger.info("loginByUserInfo : " + updated);
 		
