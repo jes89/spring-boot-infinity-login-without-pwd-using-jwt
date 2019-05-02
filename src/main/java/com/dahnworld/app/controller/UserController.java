@@ -102,6 +102,11 @@ public class UserController {
 		return ResponseEntity.ok(jwtResponse);
 	}
 	
+	@PostMapping("/updateDainNetData")
+	protected ResponseEntity<?> updateDainNetData(@RequestAttribute JwtResponse jwtResponse){
+		return ResponseEntity.ok(jwtResponse);
+	}
+	
 	private String getJwtByUserInfo(UserDto userDto) {
 
 		String userId = userDto.getUserId();
