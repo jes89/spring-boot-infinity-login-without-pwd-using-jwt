@@ -15,7 +15,18 @@ public class UserDto{
     
     private List<String> roles;
     
-    public String getName() {
+    public UserDto() {
+		super();
+	}
+
+	public UserDto(String userId, String mac, long expiryTime) {
+		super();
+		this.userId = userId;
+		this.mac = mac;
+		this.expiryTime = expiryTime;
+	}
+
+	public String getName() {
         return name;
     }
  

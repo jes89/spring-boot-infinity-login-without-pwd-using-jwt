@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dahnworld.app.dto.UserDto;
+import com.dahnworld.app.dto.UserPrinciple;
 import com.dahnworld.app.jwt.JwtProvider;
 import com.dahnworld.app.response.JwtResponse;
 import com.dahnworld.app.service.UserService;
@@ -53,30 +54,26 @@ public class UserController {
 	@PostMapping("/loginByUserInfo")
 	protected ResponseEntity<?> login(@RequestBody UserDto userDto) {
 		
-		String jwt = this.getJwtByUserInfo(userDto);
+		logger.info("loginByUserInfo : ");
 		
+		String jwt = this.getJwtByUserInfo(userDto);
+		HashMap<String, String> payload = new HashMap<>();
 		JwtResponse jwtResponse = new JwtResponse(jwt ,"new token issued");
 		UserDto selectedUserDto = userService.getUserByUserId(userDto.getUserId());
 		
-		selectedUserDto.setAccessToken(jwtResponse.getToken());
 		selectedUserDto.setExpiryTime(jwtResponse.getExpiryTime());
 		selectedUserDto.setMac(userDto.getMac());
 		
-		
 		int updated = userService.updateUserAccessInfo(selectedUserDto, jwtResponse.getToken());
 		
-		logger.info("loginByUserInfo : " + updated);
+		logger.info("updated : " + updated);
+		logger.info("jwtResponse.getToken() : " + jwtResponse.getToken());
+		logger.info("selectedUserDto.toString() : " + selectedUserDto.toString());
 		
 		if( updated == 0) {
-			
-			logger.info("jwtResponse.getToken() : " + jwtResponse.getToken());
-			logger.info("update token error : " + selectedUserDto.toString());
-			
 			jwtResponse.setMsg("update token error");
 		}
-		
-		HashMap<String, String> payload = new HashMap<>();
-		
+
 		payload.put("result","success");
 		
 		jwtResponse.setPayload(payload);
@@ -88,62 +85,56 @@ public class UserController {
 	@PostMapping("/autoLogin")
 	protected ResponseEntity<?> doAutoLogin(@RequestAttribute JwtResponse jwtResponse, HttpServletRequest req) {
 		
+		logger.info("doAutoLogin 호출 ");
+		
 		String msg = jwtResponse.getMsg();
 		
-		if(msg == null || msg.length() == 0 || msg.equals("invaild token or mac information")) {
-			
-			long expiryTime = jwtProvider.getExpiryTime(req);
-			
-			String accessToken = jwtProvider.getJwt(req);
-			String mac = jwtProvider.getMac(req);
-			String userId = userService.getUserFromTokenLog(accessToken, mac, expiryTime);
-			
-			logger.info("doAutoLogin 호출 ");
-			logger.info("accessToken : " + accessToken);
-			logger.info("mac : " + mac);
-			logger.info("expiryTime : " + expiryTime);
-			logger.info("userId : " + userId);
-			
-			if(userId == null || userId.length() == 0) {
-				return ResponseEntity.ok(jwtResponse);
-			}
-			
-			UserDto userDto = new UserDto();
-			
-			UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
-			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-			
-			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-			
-			UserDto selectedUserDto = userService.getUserByUserId(userId); 
-			
-			jwtResponse = new JwtResponse(jwtProvider.generateJwtToken(authentication), "new token issued using log", selectedUserDto.getName());
-			
-			selectedUserDto.setExpiryTime(jwtResponse.getExpiryTime());
-			
-			userDto.setUserId(userId);
-			userDto.setExpiryTime(expiryTime);
-			userDto.setMac(mac);
-			
-			int updated = userService.updateUserAccessInfo(userDto, jwtResponse.getToken());
-			
-			logger.info("updated : " + updated);
-			logger.info("jwtResponse.getToken() : " + jwtResponse.getToken());
-			logger.info("update token error : " + selectedUserDto.toString());
-			
-			if( updated == 0) {
-				jwtResponse.setMsg("update token error");
-			} 
-			
-			HashMap<String, String> payload = new HashMap<>();
-			
-			payload.put("accessToken", accessToken);
-			payload.put("mac", mac);
-			payload.put("expiryTime", String.valueOf(expiryTime));
-			
-			jwtResponse.setPayload(payload);
+		logger.info("msg : " + msg);
+		
+		if("invaild token or mac information".equals(msg) == false ) {
+			return ResponseEntity.ok(jwtResponse);
 		}
+		
+		HashMap<String, String> payload = new HashMap<>();
+		
+		long expiryTime = jwtProvider.getExpiryTime(req);
+		
+		String accessToken = jwtProvider.getJwt(req);
+		String mac = jwtProvider.getMac(req);
+		String userId = userService.getUserFromTokenLog(accessToken, mac, expiryTime);
+		
+		logger.info("accessToken : " + accessToken);
+		logger.info("mac : " + mac);
+		logger.info("expiryTime : " + expiryTime);
+		logger.info("userId : " + userId);
+		
+		if(userId == null || userId.length() == 0) {
+			return ResponseEntity.ok(jwtResponse);
+		}
+		
+		UserDto userDto = new UserDto(userId, mac, expiryTime);
+		
+		UsernamePasswordAuthenticationToken authentication = this.saveUserAuthentication(userId, req);
+		
+		UserPrinciple userPrincipal = (UserPrinciple) authentication.getPrincipal();
+		
+		jwtResponse = new JwtResponse(jwtProvider.generateJwtToken(authentication), "new token issued using log", userPrincipal.getUserNm());
+		
+		userDto.setExpiryTime(jwtResponse.getExpiryTime());
+		
+		int updated = userService.updateUserAccessInfo(userDto, jwtResponse.getToken());
+		
+		logger.info("updated : " + updated);
+		logger.info("jwtResponse.getToken() : " + jwtResponse.getToken());
+		logger.info("update token error : " + userDto.toString());
+		
+		if( updated == 0) { jwtResponse.setMsg("update token error"); } 
+		
+		payload.put("accessToken", accessToken);
+		payload.put("mac", mac);
+		payload.put("expiryTime", String.valueOf(expiryTime));
+		
+		jwtResponse.setPayload(payload);
 		
 		return ResponseEntity.ok(jwtResponse);
 	}
@@ -174,15 +165,10 @@ public class UserController {
 	
 	@GetMapping("/list")
 	protected ResponseEntity<?> getUserList(@RequestAttribute JwtResponse jwtResponse){
-
 		List<UserDto> userList = userService.getUserByUserList();
-		
 		HashMap<String, List<UserDto>> payload = new HashMap<>();
-		
 		payload.put("userList", userList);
-		
 		jwtResponse.setPayload(payload);
-		
 		return ResponseEntity.ok(jwtResponse);
 	}
 	
@@ -211,6 +197,14 @@ public class UserController {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		return jwtProvider.generateJwtToken(authentication);
+	}
+	
+	private UsernamePasswordAuthenticationToken saveUserAuthentication(String userId, HttpServletRequest req) {
+		UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+		authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		return authentication;
 	}
 	
 }
