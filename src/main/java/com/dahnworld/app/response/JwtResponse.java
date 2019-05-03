@@ -13,6 +13,7 @@ public class JwtResponse {
 	private String type = "Bearer";
 	private String msg;
 	private String userNm;
+	private int newMsg = 0;
 	private long expiryTime= (new Date().getTime() + this.jwtExpiration);
 	private HashMap<String, ?> payload;
 	
@@ -73,6 +74,10 @@ public class JwtResponse {
 	public long getJwtExpiration() {
 		return jwtExpiration;
 	}
+	
+	public void setJwtExpiration(long jwtExpiration) {
+		this.jwtExpiration = jwtExpiration;
+	}
 
 	public String getUserNm() {
 		return userNm;
@@ -82,5 +87,12 @@ public class JwtResponse {
 		this.userNm = userNm;
 	}
 	
+	public int getNewMsg() {
+		return newMsg;
+	}
+
+	public void setNewMsg(int newMsg) {
+		this.newMsg = newMsg;
+	}
 	
 }

@@ -28,7 +28,7 @@ public class testController {
 	protected ResponseEntity<?> test(@RequestAttribute JwtResponse jwtResponse) {
 		
 		String accessToken = jwtResponse.getToken();
-		
+
 		if(accessToken == null) {
 			return ResponseEntity.ok(jwtResponse);
 		}
@@ -39,9 +39,11 @@ public class testController {
 		HashMap<String, UserDto> payload = new HashMap<>();
 		
 		payload.put("user", userDto);
-		
-		
+
 		jwtResponse.setPayload(payload);
+		
+		System.out.println("NewMsg : " + jwtResponse.getNewMsg());
+		
 		
 		return ResponseEntity.ok(jwtResponse);
 	}

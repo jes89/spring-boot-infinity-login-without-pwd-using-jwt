@@ -39,7 +39,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain)
 			throws ServletException, IOException {
-		
+
 		String reqUri = req.getRequestURI();
 		JwtResponse jwtResponse = null;
 		
@@ -54,19 +54,26 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 		
 		logger.info("doFilterInternal");
 		
+		
+		
 		try {
 
 			String accessToken = jwtProvider.getJwt(req);
 			String mac = jwtProvider.getMac(req);
+			int newMsg = 1;
 			
 			logger.info("accessToken : " + accessToken);
 			logger.info("mac : " + mac);
+			logger.info("newMsg : " + newMsg);
 			
 			if (accessToken == null || jwtProvider.validateJwtToken(accessToken) == false) {
 				jwtResponse = this.issueNewToken(accessToken, mac, req);
 			} else {
 				jwtResponse = this.extendTokenLifeSpan(accessToken, req);
 			}
+			
+			jwtResponse.setNewMsg(newMsg);
+			
 		} catch (Exception e) {
 			jwtResponse = new JwtResponse(null, "doFilterInternal exception");
 		}
