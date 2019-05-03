@@ -1,5 +1,6 @@
 package com.dahnworld.app.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dahnworld.app.dto.MessageDto;
 import com.dahnworld.app.dto.UserDto;
 import com.dahnworld.app.dto.UserPrinciple;
 import com.dahnworld.app.jwt.JwtProvider;
@@ -149,12 +151,60 @@ public class UserController {
 	}
 
 	
-	@GetMapping("/view")
-	protected ResponseEntity<?> getUser(@RequestAttribute JwtResponse jwtResponse, @RequestParam String userId){
-
-		UserDto user = userService.getUserByUserId(userId);
+	@GetMapping("/message")
+	protected ResponseEntity<?> getMessage(@RequestAttribute JwtResponse jwtResponse){
 		
-		HashMap<String, UserDto> payload = new HashMap<>();
+		if(this.checkInvalidToken(jwtResponse.getToken())) {
+			return ResponseEntity.ok(jwtResponse);
+		}
+		
+		String userId = jwtProvider.getUserNameFromJwtToken(jwtResponse.getToken());
+		UserDto user = userService.getUserByUserId(userId);
+		List<MessageDto> msgList = new ArrayList<>();
+		MessageDto msg = new MessageDto();
+		MessageDto msg2 = new MessageDto();
+		
+		HashMap<String, Object> payload = new HashMap<>();
+		
+		msg.setIdx(1);
+		msg.setTitle("제목");
+		msg.setContents("내용");
+		msg.setWriterId("청담센터Id");
+		msg.setWriterNm("청담센터");
+		msg.setFilePath("/app/image/thumb_gnb_wrap_user.png");
+		msg.setReadYn("N");
+		msg.setRegDtm("2018-10-16");
+		
+		msg2.setIdx(2);
+		msg2.setTitle("제목2");
+		msg2.setContents("내용2");
+		msg2.setWriterId("청담센터Id2");
+		msg2.setWriterNm("청담센터2");
+		msg2.setFilePath("/app/image/thumb_gnb_wrap_user.png");
+		msg2.setReadYn("N");
+		msg2.setRegDtm("2018-10-18");
+		
+		msgList.add(msg);
+		msgList.add(msg2);
+		
+		payload.put("user", user);
+		payload.put("msgList", msgList);
+		
+		jwtResponse.setPayload(payload);
+		
+		return ResponseEntity.ok(jwtResponse);
+	}
+	
+	@GetMapping("/userInfo")
+	protected ResponseEntity<?> getUserInfo(@RequestAttribute JwtResponse jwtResponse){
+		if(this.checkInvalidToken(jwtResponse.getToken())) {
+			return ResponseEntity.ok(jwtResponse);
+		}
+		
+		HashMap<String, Object> payload = new HashMap<>();
+		
+		String userId = jwtProvider.getUserNameFromJwtToken(jwtResponse.getToken());
+		UserDto user = userService.getUserByUserId(userId);
 		
 		payload.put("user", user);
 		
@@ -205,6 +255,10 @@ public class UserController {
 		authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		return authentication;
+	}
+	
+	private boolean checkInvalidToken(String token) {
+		return (token == null || token.length() == 0);
 	}
 	
 }
