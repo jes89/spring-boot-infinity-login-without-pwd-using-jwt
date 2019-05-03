@@ -1,5 +1,6 @@
 package com.dahnworld.app.controller;
 
+import java.rmi.RemoteException;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RestController;
+import org.tempuri.HSPMemberSoapProxy;
+import org.tempuri.MemberInfo;
 
 import com.dahnworld.app.dto.UserDto;
 import com.dahnworld.app.jwt.JwtProvider;
@@ -25,7 +28,16 @@ public class testController {
 	private JwtProvider jwtProvider;
 	
 	@PutMapping("/test")
-	protected ResponseEntity<?> test(@RequestAttribute JwtResponse jwtResponse) {
+	protected ResponseEntity<?> test(@RequestAttribute JwtResponse jwtResponse) throws RemoteException {
+		
+		//통합회원 실섭 웹서비스(메서드 호출 시 자기 통합회원만 쓰기)
+		HSPMemberSoapProxy hsp = new HSPMemberSoapProxy();
+		
+		String testUserId = "dkswhdgks";
+		
+		MemberInfo memberinfo = hsp.getTotaluser(testUserId);
+		
+		System.out.println("email : " + memberinfo.getEmail());
 		
 		String accessToken = jwtResponse.getToken();
 
