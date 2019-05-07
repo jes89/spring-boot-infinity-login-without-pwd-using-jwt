@@ -1,7 +1,9 @@
 package com.dahnworld.app.controller;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,13 +11,15 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RestController;
-import org.tempuri.HSPMemberSoapProxy;
-import org.tempuri.MemberInfo;
 
 import com.dahnworld.app.dto.UserDto;
 import com.dahnworld.app.jwt.JwtProvider;
 import com.dahnworld.app.response.JwtResponse;
 import com.dahnworld.app.service.UserService;
+import com.dahnworld.app.util.DataTableUtil;
+
+import kr.co.br.dainnetuser.ws.wsMbrFeeGrade_asmx.GetMbrBranchGradeForMagoDbResponseGetMbrBranchGradeForMagoDbResult;
+import kr.co.br.dainnetuser.ws.wsMbrFeeGrade_asmx.WsMbrFeeGradeSoapProxy;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -31,14 +35,29 @@ public class testController {
 	protected ResponseEntity<?> test(@RequestAttribute JwtResponse jwtResponse) throws RemoteException {
 		
 		//통합회원 실섭 웹서비스(메서드 호출 시 자기 통합회원만 쓰기)
-		HSPMemberSoapProxy hsp = new HSPMemberSoapProxy();
+//		HSPMemberSoapProxy hsp = new HSPMemberSoapProxy();
+//		
+//		String testUserId = "dkswhdgks";
+//		
+//		MemberInfo memberinfo = hsp.getTotaluser(testUserId);
+//		
+//		System.out.println("email : " + memberinfo.getEmail());
 		
-		String testUserId = "dkswhdgks";
-		
-		MemberInfo memberinfo = hsp.getTotaluser(testUserId);
-		
-		System.out.println("email : " + memberinfo.getEmail());
-		
+		//다인넷 실섭 웹서비스(메서드 호출 시 자기 것만 쓰기)
+//		WsMbrFeeGradeSoapProxy DainMember = new WsMbrFeeGradeSoapProxy();
+//		
+//		DataTableUtil dtu = new DataTableUtil();
+//		List<HashMap<String, String>> dataList = new ArrayList<HashMap<String, String>>();
+//		
+//		dtu.SetTable(DainMember.getMbrBranchGradeForMagoDb("안종한", "01043454142", "890211", "").get_any()[1].toString());
+//
+//		dataList = dtu.GetDataList();
+//		
+//		if(dataList.size() > 0) {
+//			System.out.println(dtu.GetKeyList());
+//			System.out.println("gradeCd : " + dataList.get(0).get("gradeCd"));
+//		}
+
 		String accessToken = jwtResponse.getToken();
 
 		if(accessToken == null) {
