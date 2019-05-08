@@ -30,6 +30,7 @@ spring:
 ---
 mybatis:
   config-location: classpath:mapper/mybatis_config.xml
+  mapper-locations: classpath:mapper/sql/*_sql.xml
 grokonez:
   app:
     jwtSecret: 98:5A:91:00:AB:D3:0B:F0:A0:EC:E6:AD:54:31:A3:1A:7F:0F:86:E8:F5:F3:68:C4:8C:D2:5B:7B:A0:9E:50:C7
