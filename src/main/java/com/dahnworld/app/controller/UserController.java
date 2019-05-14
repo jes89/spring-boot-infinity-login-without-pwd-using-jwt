@@ -1,5 +1,6 @@
 package com.dahnworld.app.controller;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.tempuri.HSPMemberSoapProxy;
+import org.tempuri.MemberInfo;
 
 import com.dahnworld.app.dto.MessageDto;
 import com.dahnworld.app.dto.UserDto;
@@ -33,6 +36,9 @@ import com.dahnworld.app.dto.UserPrinciple;
 import com.dahnworld.app.jwt.JwtProvider;
 import com.dahnworld.app.response.JwtResponse;
 import com.dahnworld.app.service.UserService;
+import com.dahnworld.app.util.DataTableUtil;
+
+import kr.co.br.dainnetuser.ws.wsMbrFeeGrade_asmx.WsMbrFeeGradeSoapProxy;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -54,14 +60,15 @@ public class UserController {
 	UserDetailsService userDetailsService;
 	
 	@PostMapping("/loginByUserInfo")
-	protected ResponseEntity<?> login(@RequestBody UserDto userDto) {
+	protected ResponseEntity<?> login(@RequestBody UserDto userDto) throws RemoteException {
 		
 		logger.info("loginByUserInfo : ");
 		
+		String userId = userDto.getUserId();
 		String jwt = this.getJwtByUserInfo(userDto);
 		HashMap<String, String> payload = new HashMap<>();
 		JwtResponse jwtResponse = new JwtResponse(jwt ,"new token issued");
-		UserDto selectedUserDto = userService.getUserByUserId(userDto.getUserId());
+		UserDto selectedUserDto = userService.getUserByUserId(userId);
 		
 		selectedUserDto.setExpiryTime(jwtResponse.getExpiryTime());
 		selectedUserDto.setMac(userDto.getMac());
@@ -75,6 +82,8 @@ public class UserController {
 		if( updated == 0) {
 			jwtResponse.setMsg("update token error");
 		}
+		
+//		this.updateDwMemberCdByUserId(userId);
 
 		payload.put("result","success");
 		
@@ -85,7 +94,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/autoLogin")
-	protected ResponseEntity<?> doAutoLogin(@RequestAttribute JwtResponse jwtResponse, HttpServletRequest req) {
+	protected ResponseEntity<?> doAutoLogin(@RequestAttribute JwtResponse jwtResponse, HttpServletRequest req) throws RemoteException {
 		
 		logger.info("doAutoLogin 호출 ");
 		
@@ -131,6 +140,8 @@ public class UserController {
 		logger.info("update token error : " + userDto.toString());
 		
 		if( updated == 0) { jwtResponse.setMsg("update token error"); } 
+		
+//		this.updateDwMemberCdByUserId(userId);
 		
 		payload.put("accessToken", accessToken);
 		payload.put("mac", mac);
@@ -232,6 +243,13 @@ public class UserController {
 		return ResponseEntity.ok(jwtResponse);
 	}
 	
+	@RequestMapping("/updateDwMemberCdByUserId")
+	public void updateDwMemberCdByUserId() throws RemoteException {
+		System.out.println("updateDwMemberCdByUserId");
+		
+		this.updateDwMemberCdByUserId("dkswhdgks");
+	}
+	
 	private String getJwtByUserInfo(UserDto userDto) {
 
 		String userId = userDto.getUserId();
@@ -259,6 +277,45 @@ public class UserController {
 	
 	private boolean checkInvalidToken(String token) {
 		return (token == null || token.length() == 0);
+	}
+	
+	private int updateDwMemberCdByUserId(String userId) throws RemoteException {
+		
+		HSPMemberSoapProxy hsp = new HSPMemberSoapProxy();
+		WsMbrFeeGradeSoapProxy DainMember = new WsMbrFeeGradeSoapProxy();
+		
+		String userNm;
+		String userHp;
+		String userBirthday;
+		String dwMemberCd;
+		
+		int result = 0;
+		
+		MemberInfo memberinfo = hsp.getTotaluser(userId);
+		
+		userNm = memberinfo.getUserNm();
+		userHp = memberinfo.getHP1() + memberinfo.getHP2() + memberinfo.getHP3();
+		userBirthday = memberinfo.getBirthday().substring(2);
+		
+		logger.info("userNm : " + userNm);
+		logger.info("userHp : " + userHp);
+		logger.info("userBirthday : " + userBirthday);
+
+		DataTableUtil dtu = new DataTableUtil();
+		List<HashMap<String, String>> dataList = new ArrayList<HashMap<String, String>>();
+		
+		dtu.SetTable(DainMember.getMbrBranchGradeForMagoDb(userNm, userHp, userBirthday, "").get_any()[1].toString());
+
+		dataList = dtu.GetDataList();
+		
+		if(dataList.size() > 0) {
+			dwMemberCd = dataList.get(0).get("mbrCd");
+			logger.info("dwMemberCd : " + dwMemberCd);
+			
+			userService.updateDwMemberCd(userId, dwMemberCd);
+		}
+		
+		return result; 
 	}
 	
 }

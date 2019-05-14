@@ -64,4 +64,9 @@ public class UserServiceImpl implements UserService {
 		return userDao.getUserFromTokenLog(userDto);
 	}
 
+	@Override
+	public int updateDwMemberCd(String userId, String dwMemberCd) {
+		return userDao.updateDwMemberCd(userId, dwMemberCd);
+	}
+
 }

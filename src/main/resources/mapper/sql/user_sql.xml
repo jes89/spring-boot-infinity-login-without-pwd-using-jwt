@@ -64,4 +64,9 @@
 		]]>
 	</select>
     
+    <update id="updateDwMemberCd">
+    	<![CDATA[
+   		 	exec dbo.up_dwMemberCdUpdate #{userId}, #{dwMemberCd}
+    	]]>
+    </update>
 </mapper>

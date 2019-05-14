@@ -11,6 +11,7 @@ public interface UserDao  {
 	
 	int updateUserAccessInfo(UserDto userDto);
 	int updateTokenLog(UserDto userDto);
+	int updateDwMemberCd(String userId, String dwMemberCd);
 	
 	String getUserFromTokenLog(UserDto userDto);
 	

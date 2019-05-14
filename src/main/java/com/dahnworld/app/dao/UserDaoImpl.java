@@ -53,6 +53,11 @@ public class UserDaoImpl implements UserDao {
 	public String getUserFromTokenLog(UserDto userDto) {
 		return userMapper.getUserFromTokenLog(userDto);
 	}
+
+	@Override
+	public int updateDwMemberCd(String userId, String dwMemberCd) {
+		return userMapper.updateDwMemberCd(userId, dwMemberCd);
+	}
 	
 
 

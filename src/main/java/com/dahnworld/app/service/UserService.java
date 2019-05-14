@@ -9,6 +9,7 @@ public interface UserService {
 	
 	int updateUserAccessInfo(UserDto userDto, String accessToken);
 	int updateTokenLog(UserDto userDto);
+	int updateDwMemberCd(String userId, String dwMemberCd);
 	
 	String getUserFromTokenLog(String accessToken, String mac, long expiryTime);
 	

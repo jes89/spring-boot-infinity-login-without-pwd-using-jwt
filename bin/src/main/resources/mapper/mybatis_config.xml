@@ -46,10 +46,5 @@
 		<typeAlias type="java.util.HashMap" 						alias="hashMap"			/>
 		<typeAlias type="java.lang.Integer" 						alias="int" 			/>
 		<typeAlias type="java.lang.String" 							alias="String" 			/>
-	</typeAliases>
-	
-   <mappers>
-        <mapper resource="mapper/sql/user_sql.xml"/>
-    </mappers>
-	
+	</typeAliases>	
 </configuration>
